@@ -1,10 +1,12 @@
 import { parseBuffer } from "music-metadata";
 import fs from "node:fs";
+import { extname } from "node:path";
 
 const handleAudioFile = async (
-  file: Bun.BunFile,
+  filePath: string,
   orgPath: string,
 ): Promise<void> => {
+  const file = Bun.file(filePath);
   await file.exists();
 
   if (!file.type.includes("audio")) {
@@ -39,7 +41,10 @@ const handleAudioFile = async (
     "/" +
     (parsedMusicData.album ?? "no_album") +
     "/" +
-    (parsedMusicData.title ?? "no_title");
+    ((parsedMusicData.trackNumber ?? "00") +
+      "_" +
+      (parsedMusicData.title ?? "no_title") +
+      (extname(filePath) ?? ""));
   console.log("writing audio file to target path: ", targetTrackPath);
 
   Bun.write(targetTrackPath, file);
@@ -54,8 +59,7 @@ const createOrganizedMusicDir = async (dirPath: string, dirName: string) => {
 
   fs.readdir(dirPath, (_, files) => {
     files.forEach(async (filePath) => {
-      const file = Bun.file(dirPath + "/" + filePath);
-      handleAudioFile(file, targetOutputPath);
+      handleAudioFile(dirPath + "/" + filePath, targetOutputPath);
     });
   });
 };

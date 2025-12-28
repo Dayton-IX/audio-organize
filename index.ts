@@ -67,12 +67,12 @@ const createOrganizedMusicDir = async (
 
 const dirPathInput = Bun.argv[2];
 if (!dirPathInput)
-  throw Error("please provide a directory for audio organizer");
+  throw Error("please provide an input directory for audio organizer");
 
-const dirNameInput = Bun.argv[3];
-if (!dirNameInput)
+const targetDirPathInput = Bun.argv[3];
+if (!targetDirPathInput)
   throw Error(
-    "please provide a directory name for the organized audio to be written to",
+    "please provide an output directory for the organized audio to be written to",
   );
 
-await createOrganizedMusicDir(dirPathInput, dirNameInput);
+await createOrganizedMusicDir(dirPathInput, targetDirPathInput);

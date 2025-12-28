@@ -43,23 +43,24 @@ const handleAudioFile = async (
     "/" +
     ((parsedMusicData.trackNumber ?? "00") +
       "_" +
-      (parsedMusicData.title ?? "no_title") +
+      (parsedMusicData.title?.replaceAll(" ", "_") ?? "no_title") +
       (extname(filePath) ?? ""));
   console.log("writing audio file to target path: ", targetTrackPath);
 
   Bun.write(targetTrackPath, file);
 };
 
-const createOrganizedMusicDir = async (dirPath: string, dirName: string) => {
-  const basePath = "/home/daytonix/Music/organized";
-  const targetOutputPath = basePath + "/" + dirName;
-  if (!fs.existsSync(targetOutputPath)) {
-    fs.mkdirSync(targetOutputPath, { recursive: true });
+const createOrganizedMusicDir = async (
+  inputDirPath: string,
+  outputDirPath: string,
+) => {
+  if (!fs.existsSync(outputDirPath)) {
+    fs.mkdirSync(outputDirPath, { recursive: true });
   }
 
-  fs.readdir(dirPath, (_, files) => {
+  fs.readdir(inputDirPath, (_, files) => {
     files.forEach(async (filePath) => {
-      handleAudioFile(dirPath + "/" + filePath, targetOutputPath);
+      handleAudioFile(inputDirPath + "/" + filePath, outputDirPath);
     });
   });
 };
@@ -75,4 +76,3 @@ if (!dirNameInput)
   );
 
 await createOrganizedMusicDir(dirPathInput, dirNameInput);
-
